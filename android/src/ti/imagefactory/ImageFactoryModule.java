@@ -226,37 +226,37 @@ public class ImageFactoryModule extends KrollModule {
 	}
 
 	@Kroll.method
-	public TiBlob imageWithRotation(TiBlob blob, HashMap args) {
+	public TiBlob imageWithRotation(TiBlob blob, HashMap<String,Object> args) {
 		return imageTransform(TRANSFORM_ROTATE, blob, new KrollDict(args));
 	}
 
 	@Kroll.method
-	public TiBlob imageWithAlpha(TiBlob blob, HashMap args) {
+	public TiBlob imageWithAlpha(TiBlob blob, HashMap<String,Object> args) {
 		return imageTransform(TRANSFORM_ALPHA, blob, new KrollDict(args));
 	}
 
 	@Kroll.method
-	public TiBlob imageWithTransparentBorder(TiBlob blob, HashMap args) {
+	public TiBlob imageWithTransparentBorder(TiBlob blob, HashMap<String,Object> args) {
 		return imageTransform(TRANSFORM_TRANSPARENTBORDER, blob, new KrollDict(args));
 	}
 
 	@Kroll.method
-	public TiBlob imageWithRoundedCorner(TiBlob blob, HashMap args) {
+	public TiBlob imageWithRoundedCorner(TiBlob blob, HashMap<String,Object> args) {
 		return imageTransform(TRANSFORM_ROUNDEDCORNER, blob, new KrollDict(args));
 	}
 
 	@Kroll.method
-	public TiBlob imageAsThumbnail(TiBlob blob, HashMap args) {
+	public TiBlob imageAsThumbnail(TiBlob blob, HashMap<String,Object> args) {
 		return imageTransform(TRANSFORM_THUMBNAIL, blob, new KrollDict(args));
 	}
 
 	@Kroll.method
-	public TiBlob imageAsResized(TiBlob blob, HashMap args) {
+	public TiBlob imageAsResized(TiBlob blob, HashMap<String,Object> args) {
 		return imageTransform(TRANSFORM_RESIZE, blob, new KrollDict(args));
 	}
 
 	@Kroll.method
-	public TiBlob imageAsCropped(TiBlob blob, HashMap args) {
+	public TiBlob imageAsCropped(TiBlob blob, HashMap<String,Object> args) {
 		return imageTransform(TRANSFORM_CROP, blob, new KrollDict(args));
 	}
 
@@ -272,7 +272,9 @@ public class ImageFactoryModule extends KrollModule {
 			// Apply the transforms one at a time
 			for (int i = 1; i < args.length; i++) {
 				if (args[i] instanceof HashMap) {
-					KrollDict transform = new KrollDict((HashMap) args[i]);
+					@SuppressWarnings("unchecked")
+					HashMap<String,Object> transformMap = (HashMap<String,Object>) args[i];
+					KrollDict transform = new KrollDict(transformMap);
 					int type = transform.optInt("type", TRANSFORM_NONE);
 					Bitmap newImage = imageTransform(type, image, transform);
 					image.recycle();
@@ -324,11 +326,7 @@ public class ImageFactoryModule extends KrollModule {
 			image = ref.getBitmap();
 			bos = new ByteArrayOutputStream();
 			if (image.compress(CompressFormat.JPEG, (int) (compressionQuality * 100), bos)) {
-				byte[] data = bos.toByteArray();
-				BitmapFactory.Options bfOptions = new BitmapFactory.Options();
-				bfOptions.inPurgeable = true;
-				bfOptions.inInputShareable = true;
-				result = TiBlob.blobFromData(data, "image/jpeg");
+				result = TiBlob.blobFromData(bos.toByteArray(), "image/jpeg");
 				coerceDimensionsIntoBlob(image, result);
 			}
 		} catch (OutOfMemoryError e) {
