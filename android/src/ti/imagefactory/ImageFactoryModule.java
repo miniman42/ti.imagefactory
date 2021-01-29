@@ -27,7 +27,7 @@ import org.appcelerator.titanium.view.TiDrawableReference;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
-import android.support.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 import android.util.Log;
 
 @Kroll.module(name = "ImageFactory", id = "ti.imagefactory")
